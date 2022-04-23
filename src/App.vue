@@ -1,26 +1,32 @@
-    <style>
-      #app{
-        background-image: url('assets/img/bg-image-filtered.jpg');
-        background-repeat: no-repeat;
-        background-size: cover;
-        background-position: center;
-      }
-    </style>
+<style scoped>
+  div[data-app='true']{
+    background-image: url('@/assets/img/bg-image-filtered.jpg');
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
+  }
+</style>
 <template>
-  <v-app style="bottom: 0px;">
-  <v-navigation-drawer
+
+  <div id="app">
+    <v-app style="bottom: 0px;" >
+        <v-navigation-drawer
       v-model="drawer"
       absolute
       temporary
     >
       <v-list-item>
         <v-list-item-content>
-          <v-list-item-title>Home</v-list-item-title>
+          <v-list-item-title>
+            <router-link to="/">Home</router-link> |
+          </v-list-item-title>
         </v-list-item-content>
       </v-list-item>
       <v-list-item>
         <v-list-item-content>
-          <v-list-item-title>Services</v-list-item-title>
+          <v-list-item-title>
+            <router-link to="/about">About</router-link>
+          </v-list-item-title>
         </v-list-item-content>
       </v-list-item>
       <v-list-item>
@@ -56,26 +62,40 @@
         <v-app-bar-nav-icon @click.stop="drawer = !drawer"></v-app-bar-nav-icon>
       </div>
     </v-app-bar>
-
-    <v-main>
-      <HelloWorld/>
-    </v-main>
-  </v-app>
+    <router-view/>
+    </v-app>
+  </div>
 </template>
 
+<style lang="scss">
+#app {
+  font-family: Avenir, Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-align: center;
+  color: #2c3e50;
+}
+
+nav {
+  padding: 30px;
+
+  a {
+    font-weight: bold;
+    color: #2c3e50;
+
+    &.router-link-exact-active {
+      color: #42b983;
+    }
+  }
+}
+</style>
 <script>
-import HelloWorld from './components/HelloWorld';
 
 export default {
-  name: 'App',
-
-  components: {
-    HelloWorld,
-  },
-
   data: () => ({
     drawer: null,
-    
+    bgImage: '/img/bg-image-filtered.jpg'  ,
+    image: "http://1.bp.blogspot.com/-8PfnHfgrH4I/TylX2v8pTMI/AAAAAAAAJJ4/TICBoSEI57o/s1600/search_by_image_image.png"  
   }),
-};
+}
 </script>

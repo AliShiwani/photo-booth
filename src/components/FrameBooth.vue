@@ -3,47 +3,112 @@
     display: flex;
     justify-content: center;
   }
+
+  .web-camera-container {
+    margin-top: 2rem;
+    margin-bottom: 2rem;
+    padding: 2rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    border-radius: 4px;
+    width: 500px;
+
+  }
   .camera-button {
     margin-bottom: 2rem;
     position: absolute;
     bottom: 0;
+    width: 100%;
+    padding: 10px 10px 10px 10px;
   }
-
+  .web-camera-container .camera-loading {
+    overflow: hidden;
+    height: 100%;
+    position: absolute;
+    width: 100%;
+    min-height: 150px;
+    margin: 3rem 0 0 -1.2rem;
+  }
+  .bg-frame{
+    background-image: url('@/assets/img/picture_frame.png');
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
+    width: 72%;
+  }
+    div[data-app='true']{
+    background-image: url('@/assets/img/bg-image.jpg')!important;
+  } 
 </style>
 <template>
-  <v-container fill-height grid-list-md text-xs-center>
-    <v-row style="justify-content: center">
-        <v-row align="center"
-            justify="center">
-            <v-col>
-              <h2 style="color:white;">Share your selfie</h2>
-            </v-col>
-        </v-row>
-    <div class="camera-button">
+  <v-container style="background-color:white; height:100%;">
+    <v-row style="justify-content: center;">
+  
       <!-- <button type="button" class="button is-rounded" :class="{ 'is-primary' : !isCameraOpen, 'is-danger' : isCameraOpen}" @click="toggleCamera">
           <span v-if="!isCameraOpen">Open Camera</span>
           <span v-else>Close Camera</span>
       </button> -->
-      <router-link to="/takephoto">
-      <v-btn 
-    
-        class="mx-2"
-        fab
-        dark
-        large
-        color="cyan"
-        
-      >
       
-        <v-icon dark>
-          mdi-camera
-        </v-icon>
-      </v-btn>
-      </router-link>
+      <v-row
+          align="center"
+          justify="space-around"
+          class="camera-button">
+        <v-btn 
+        depressed
+        color="success"
+        @click="takePhoto"
+        >
+          Accept
+        </v-btn>
+        <router-link to="/">
+        <v-btn
+          depressed
+          color="error"
+        >
+          Decline
+        </v-btn>
+        </router-link>
+      </v-row>
 
+    
+    <v-img
+      lazy-src="require('@/assets/img/picture_frame.png')"
+      max-height="480"
+      max-width="366"
+      :src="require('@/assets/img/picture_frame.png')"
+      style="position:absolute"
+    ></v-img>
+    <div class="web-camera-container">
+    <div v-show="isCameraOpen && isLoading" class="camera-loading">
+      <ul class="loader-circle">
+        <li></li>
+        <li></li>
+        <li></li>
+      </ul>
     </div>
-    <div class=""> 
-
+    
+    <div v-if="isCameraOpen" v-show="!isLoading" class="camera-box" :class="{ 'flash' : isShotPhoto }">
+      
+      <div class="camera-shutter" :class="{'flash' : isShotPhoto}"></div>
+        
+      <video v-show="!isPhotoTaken" ref="camera" :width="275" :height="337.5" autoplay style="object-fit: cover; padding-left: 30px;"></video>
+      
+      <canvas v-show="isPhotoTaken" id="photoTaken" ref="canvas" :width="275" :height="337.5" style="padding-left: 30px;"></canvas>
+    </div>
+    
+    <!-- <div v-if="isCameraOpen && !isLoading" class="camera-shoot">
+      <button type="button" class="button" @click="takePhoto">
+        <img src="https://img.icons8.com/material-outlined/50/000000/camera--v2.png">
+      </button>
+    </div> -->
+    
+    <div v-if="isPhotoTaken && isCameraOpen" class="camera-download">
+      <a id="downloadPhoto" download="my-photo.jpg" class="button" role="button" @click="downloadImage">
+        Download
+      </a>
+    </div>
     </div>
     </v-row>
   </v-container>
@@ -111,6 +176,10 @@
         },
       ],
     }),
+    mounted(){
+        this.isCameraOpen = true;
+        this.createCameraElement();
+    },
       methods: {
     toggleCamera() {
       if(this.isCameraOpen) {
@@ -166,7 +235,7 @@
       }
       
       this.isPhotoTaken = !this.isPhotoTaken;
-      
+      console.log(this.$refs)
       const context = this.$refs.canvas.getContext('2d');
       context.drawImage(this.$refs.camera, 0, 0, 450, 337.5);
     },
